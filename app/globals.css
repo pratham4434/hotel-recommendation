@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* Glowing effect for buttons and inputs */
+.glow-effect {
+  box-shadow: 0 0 5px theme('colors.yellow.500'),
+              0 0 10px theme('colors.yellow.500');
+}
+
+.hover-glow-effect:hover {
+  box-shadow: 0 0 5px theme('colors.yellow.500'),
+              0 0 10px theme('colors.yellow.500');
+}
+
+/* Add these classes to buttons and inputs for the glow effect */
+@layer components {
+  .btn-glow {
+    @apply glow-effect hover:glow-effect;
+  }
+
+  .input-glow {
+    @apply focus:glow-effect;
+  }
+}
+
