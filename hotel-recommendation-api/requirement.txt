@@ -1,0 +1,6 @@
+pip show fastapi
+pip show uvicorn
+pip show pydantic
+pip show pandas
+pip show scikit-learn
+pip show numpy
