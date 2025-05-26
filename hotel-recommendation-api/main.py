@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional,Union
 from model.recommender import recommend  # import from your recommender module
+import pandas as pd
 
 app = FastAPI()
 
@@ -36,3 +37,14 @@ def get_recommendations(req: RecommendRequest):
         user_id=req.user_id
     )
     return {"recommendations": recommendations}
+
+
+# Load hotel data from pickle once
+hotel_df = pd.read_pickle("./model/hoteldata.pkl")
+
+@app.get("/hotels")
+def get_all_hotels():
+    # Select important fields (adjust if needed)
+    columns = ["hotelname", "roomtype", "city", "country", "propertytype", "starrating"]
+    hotels = hotel_df[columns].dropna(subset=["hotelname"]).to_dict(orient="records")
+    return {"hotels": hotels}
