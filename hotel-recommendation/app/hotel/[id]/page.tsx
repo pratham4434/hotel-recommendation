@@ -1,22 +1,114 @@
-import Image from 'next/image'
-import { Star } from 'lucide-react'
+'use client';
 
-const hotel = {
-  id: 1,
-  name: 'Luxury Resort & Spa',
-  images: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg'],
-  description: 'Experience ultimate luxury at our resort and spa. Nestled in a picturesque location, our hotel offers world-class amenities and unparalleled service.',
-  price: 299,
-  stars: 5,
-  amenities: ['Pool', 'Spa', 'Gym', 'Restaurant', 'Bar', 'Room Service', 'Free Wi-Fi'],
-  reviews: [
-    { id: 1, user: 'John D.', rating: 5, comment: 'Absolutely amazing experience! The staff was incredibly attentive and the facilities were top-notch.' },
-    { id: 2, user: 'Sarah M.', rating: 4, comment: 'Beautiful resort with great amenities. The spa treatments were particularly enjoyable.' },
-    { id: 3, user: 'Michael R.', rating: 5, comment: 'Exceeded all expectations. The room was spacious and luxurious, and the views were breathtaking.' },
-  ],
-}
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { Star } from 'lucide-react';
 
 export default function HotelDetails() {
+  const [hotel, setHotel] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchHotel = async () => {
+      try {
+        const nameRes = await fetch('https://fakerapi.it/api/v1/companies?_quantity=1');
+        const nameData = await nameRes.json();
+        const hotelName =
+          nameData?.data?.[0]?.name || 'LuxeStay Premier Suites';
+
+        const imageRes = await fetch(
+          'https://api.pexels.com/v1/search?query=hotel&per_page=3',
+          {
+            headers: {
+              Authorization: process.env.NEXT_PUBLIC_PEXELS_API_KEY!,
+            },
+          }
+        );
+        const imageData = await imageRes.json();
+        const images = imageData?.photos?.map((p: any) => p.src.medium) || [
+          '/placeholder.svg',
+          '/placeholder.svg',
+          '/placeholder.svg',
+        ];
+
+        setHotel({
+          id: 1,
+          name: hotelName,
+          images,
+          description:
+            'Experience ultimate luxury at our resort and spa. Nestled in a picturesque location, our hotel offers world-class amenities and unparalleled service.',
+          price: Math.floor(200 + Math.random() * 300),
+          stars: Math.floor(4 + Math.random() * 2),
+          amenities: [
+            'Pool',
+            'Spa',
+            'Gym',
+            'Restaurant',
+            'Bar',
+            'Room Service',
+            'Free Wi-Fi',
+          ],
+          reviews: [
+            {
+              id: 1,
+              user: 'John D.',
+              rating: 5,
+              comment:
+                'Absolutely amazing experience! The staff was incredibly attentive and the facilities were top-notch.',
+            },
+            {
+              id: 2,
+              user: 'Sarah M.',
+              rating: 4,
+              comment:
+                'Beautiful resort with great amenities. The spa treatments were particularly enjoyable.',
+            },
+            {
+              id: 3,
+              user: 'Michael R.',
+              rating: 5,
+              comment:
+                'Exceeded all expectations. The room was spacious and luxurious, and the views were breathtaking.',
+            },
+          ],
+        });
+      } catch (error) {
+        console.error('Failed to fetch hotel info:', error);
+      }
+    };
+
+    fetchHotel();
+  }, []);
+
+  if (!hotel) {
+    return (
+      <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 animate-pulse">
+        <div className="space-y-4">
+          <div className="bg-gray-700 h-64 w-full rounded-lg" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gray-700 h-32 rounded-lg" />
+            <div className="bg-gray-700 h-32 rounded-lg" />
+          </div>
+        </div>
+        <div className="bg-gray-800 p-6 rounded-lg space-y-4">
+          <div className="h-6 bg-gray-700 w-3/4 rounded" />
+          <div className="h-6 bg-yellow-500 w-1/2 rounded" />
+          <div className="flex space-x-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="w-5 h-5 bg-yellow-500 rounded" />
+            ))}
+          </div>
+          <div className="h-4 bg-gray-700 w-1/3 rounded" />
+          <div className="grid grid-cols-2 gap-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-3 bg-gray-700 rounded" />
+            ))}
+          </div>
+          <div className="h-10 bg-yellow-500 rounded" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <h1 className="text-3xl font-bold mb-6">{hotel.name}</h1>
@@ -31,7 +123,7 @@ export default function HotelDetails() {
             className="w-full h-64 object-cover rounded-lg hover-glow-effect"
           />
           <div className="grid grid-cols-2 gap-4">
-            {hotel.images.slice(1).map((image, index) => (
+            {hotel.images.slice(1).map((image: string, index: number) => (
               <Image
                 key={index}
                 src={image}
@@ -54,7 +146,7 @@ export default function HotelDetails() {
           </div>
           <h2 className="text-xl font-semibold mb-2">Amenities</h2>
           <ul className="grid grid-cols-2 gap-2 mb-6">
-            {hotel.amenities.map((amenity) => (
+            {hotel.amenities.map((amenity: string) => (
               <li key={amenity} className="flex items-center">
                 <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
                 {amenity}
@@ -70,7 +162,7 @@ export default function HotelDetails() {
       <div className="bg-gray-800 p-6 rounded-lg hover-glow-effect">
         <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
         <div className="space-y-4">
-          {hotel.reviews.map((review) => (
+          {hotel.reviews.map((review: any) => (
             <div key={review.id} className="bg-gray-700 p-4 rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-semibold">{review.user}</span>
@@ -125,6 +217,5 @@ export default function HotelDetails() {
         </form>
       </div>
     </div>
-  )
+  );
 }
-
